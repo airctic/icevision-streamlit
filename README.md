@@ -5,4 +5,4 @@ Streamlit demo app for MantisShrimp
 `pip install -r requirements.txt`
 
 # Usage
-`streamlit run app1.py`
+`streamlit run app.py`

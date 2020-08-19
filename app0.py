@@ -2,13 +2,13 @@ import streamlit as st
 import PIL, requests
 from mantisshrimp.all import *
 
-WEIGHTS_URL = "https://github.com/airctic/streamlitshrimp/releases/download/pets_faster_resnetfpn50/pets_faster_resnetfpn50.zip"
-CLASS_MAP = datasets.pets.class_map()
+WEIGHTS_URL = "https://mantisshrimp-models.s3.us-east-2.amazonaws.com/pennfundan_maskrcnn_resnet50fpn.zip"
+CLASS_MAP = datasets.pennfundan.CLASS_MAP()
 
 
 @st.cache(allow_output_mutation=True)
 def load_model():
-    model = faster_rcnn.model(num_classes=len(CLASS_MAP))
+    model = mask_rcnn.model(num_classes=len(CLASS_MAP))
     state_dict = torch.hub.load_state_dict_from_url(
         WEIGHTS_URL, map_location=torch.device("cpu")
     )
@@ -29,8 +29,8 @@ def predict(model, image_url):
     # Whenever you have images in memory (numpy arrays) you can use `Dataset.from_images`
     infer_ds = Dataset.from_images([img], tfms_)
 
-    batch, samples = faster_rcnn.build_infer_batch(infer_ds)
-    preds = faster_rcnn.predict(model=model, batch=batch)
+    batch, samples = mask_rcnn.build_infer_batch(infer_ds)
+    preds = mask_rcnn.predict(model=model, batch=batch)
 
     return samples[0]["img"], preds[0]
 
@@ -39,7 +39,7 @@ def show_prediction(img, pred):
     show_pred(
         img=img,
         pred=pred,
-        class_map=CLASS_MAP,
+        CLASS_MAP=CLASS_MAP,
         denormalize_fn=denormalize_imagenet,
         show=True,
     )
@@ -57,7 +57,7 @@ def run_app():
 
     image_url = st.text_input(
         label="Image url",
-        value="https://petcaramelo.com/wp-content/uploads/2018/06/beagle-cachorro.jpg",
+        value="https://github.com/ai-fast-track/ice-streamlit/blob/master/images/image1.png",
     )
 
     model = load_model()
