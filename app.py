@@ -3,12 +3,12 @@ import PIL, requests
 from mantisshrimp.all import *
 
 WEIGHTS_URL = "https://mantisshrimp-models.s3.us-east-2.amazonaws.com/pennfundan_maskrcnn_resnet50fpn.zip"
-class_map = datasets.pennfundan.class_map()
+CLASS_MAP = datasets.pennfundan.CLASS_MAP()
 
 
 @st.cache(allow_output_mutation=True)
 def load_model():
-    model = mask_rcnn.model(num_classes=len(class_map))
+    model = mask_rcnn.model(num_classes=len(CLASS_MAP))
     state_dict = torch.hub.load_state_dict_from_url(
         WEIGHTS_URL, map_location=torch.device("cpu")
     )
@@ -39,7 +39,7 @@ def show_prediction(img, pred):
     show_pred(
         img=img,
         pred=pred,
-        class_map=class_map,
+        CLASS_MAP=CLASS_MAP,
         denormalize_fn=denormalize_imagenet,
         show=True,
     )
