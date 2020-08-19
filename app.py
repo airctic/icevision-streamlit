@@ -57,7 +57,7 @@ def run_app():
 
     image_url = st.text_input(
         label="Image url",
-        value="https://petcaramelo.com/wp-content/uploads/2018/06/beagle-cachorro.jpg",
+        value="https://github.com/ai-fast-track/ice-streamlit/blob/master/images/image1.png",
     )
 
     model = load_model()
