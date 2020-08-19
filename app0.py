@@ -39,7 +39,7 @@ def show_prediction(img, pred):
     show_pred(
         img=img,
         pred=pred,
-        CLASS_MAP=CLASS_MAP,
+        class_map=CLASS_MAP,
         denormalize_fn=denormalize_imagenet,
         show=True,
     )
