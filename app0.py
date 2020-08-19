@@ -3,7 +3,7 @@ import PIL, requests
 from mantisshrimp.all import *
 
 WEIGHTS_URL = "https://mantisshrimp-models.s3.us-east-2.amazonaws.com/pennfundan_maskrcnn_resnet50fpn.zip"
-CLASS_MAP = datasets.pennfundan.CLASS_MAP()
+CLASS_MAP = datasets.pennfundan.class_map()
 
 
 @st.cache(allow_output_mutation=True)
