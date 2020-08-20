@@ -20,11 +20,9 @@ pennfundan_images = [
 # This sidebar UI lets the user select model thresholds.
 def object_detector_ui():
     st.sidebar.markdown("# Model Thresholds")
-    confidence_threshold = st.sidebar.slider(
-        "Confidence threshold", 0.0, 1.0, 0.5, 0.01
-    )
-    overlap_threshold = st.sidebar.slider("Overlap threshold", 0.0, 1.0, 0.3, 0.01)
-    return confidence_threshold, overlap_threshold
+    detection_threshold = st.sidebar.slider("Detection threshold", 0.0, 1.0, 0.5, 0.01)
+    mask_threshold = st.sidebar.slider("Mask threshold", 0.0, 1.0, 0.5, 0.01)
+    return detection_threshold, mask_threshold
 
 
 def sidebar_ui():
@@ -34,9 +32,6 @@ def sidebar_ui():
     page = st.sidebar.selectbox(
         "Choose a dataset", ["PETS", "PennFundan", "Fridge Objects", "Raccoon"]
     )  # pages
-
-    # Draw the UI element to select parameters for the YOLO object detector.
-    confidence_threshold, overlap_threshold = object_detector_ui()
 
 
 @st.cache(allow_output_mutation=True)
@@ -55,7 +50,9 @@ def image_from_url(url):
     return np.array(img)
 
 
-def predict(model, image_url):
+def predict(
+    model, image_url, detection_threshold: float = 0.5, mask_threshold: float = 0.5
+):
     img = image_from_url(image_url)
 
     tfms_ = tfms.A.Adapter([tfms.A.Normalize()])
@@ -63,7 +60,12 @@ def predict(model, image_url):
     infer_ds = Dataset.from_images([img], tfms_)
 
     batch, samples = mask_rcnn.build_infer_batch(infer_ds)
-    preds = mask_rcnn.predict(model=model, batch=batch)
+    preds = mask_rcnn.predict(
+        model=model,
+        batch=batch,
+        detection_threshold=detection_threshold,
+        mask_threshold=mask_threshold,
+    )
 
     return samples[0]["img"], preds[0]
 
@@ -90,6 +92,9 @@ def run_app():
     # st.image("images/icevision.png", use_column_width=True)
     sidebar_ui()
 
+    # Draw the threshold parameters for object detection model.
+    detection_threshold, mask_threshold = object_detector_ui()
+
     st.markdown("### ** Paste Your Image URL**")
     my_placeholder = st.empty()
 
@@ -111,7 +116,12 @@ def run_app():
     model = load_model()
 
     if image_url:
-        img, pred = predict(model=model, image_url=image_url)
+        img, pred = predict(
+            model=model,
+            image_url=image_url,
+            detection_threshold=detection_threshold,
+            mask_threshold=mask_threshold,
+        )
         show_prediction(img=img, pred=pred)
 
 
