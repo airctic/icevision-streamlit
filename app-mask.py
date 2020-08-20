@@ -8,28 +8,31 @@ WEIGHTS_URL = "https://mantisshrimp-models.s3.us-east-2.amazonaws.com/pennfundan
 CLASS_MAP = datasets.pennfundan.class_map()
 
 pennfundan_images = [
+    "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/image0.png",
     "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/image1.png",
     "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/image2.png",
     "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/image3.png",
     "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/image4.png",
     "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/image5.png",
-    "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/image6.png",
+    "https://www.adventisthealth.org/cms/thumbnails/00/1100x506/images/blog/kids_crossing_street.jpg",
     "https://i.cbc.ca/1.5510620.1585229177!/cumulusImage/httpImage/image.jpg_gen/derivatives/16x9_780/toronto-street-scene-covid-19.jpg",
 ]
 
 
 def sidebar_ui():
     # st.sidebar.image("images/airctic-logo-medium.png")
-    st.sidebar.image("https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/icevision-deploy-small.png")
+    st.sidebar.image(
+        "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/icevision-deploy-small.png"
+    )
 
-    # page = st.sidebar.selectbox(
-    #     "Choose a dataset", ["PETS", "PennFundan", "Fridge Objects", "Raccoon"]
-    # )  # pages
+    page = st.sidebar.selectbox(
+        "Choose a dataset", ["PETS", "PennFundan", "Fridge Objects", "Raccoon"]
+    )  # pages
 
 
 # This sidebar UI lets the user select model thresholds.
 def object_detector_ui():
-    st.sidebar.markdown("# Model Thresholds")
+    # st.sidebar.markdown("# Model Thresholds")
     detection_threshold = st.sidebar.slider("Detection threshold", 0.0, 1.0, 0.5, 0.01)
     mask_threshold = st.sidebar.slider("Mask threshold", 0.0, 1.0, 0.5, 0.01)
     return detection_threshold, mask_threshold
@@ -99,7 +102,9 @@ def run_app():
     bbox = st.sidebar.checkbox(label="Bounding Box", value=False)
     print("bbox", bbox)
 
-    st.sidebar.image("https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/airctic-logo-medium.png")
+    st.sidebar.image(
+        "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/airctic-logo-medium.png"
+    )
 
     st.markdown("### ** Paste Your Image URL**")
     my_placeholder = st.empty()
@@ -115,7 +120,9 @@ def run_app():
         index = randrange(len(pennfundan_images))
         image_path = pennfundan_images[index]
         image_url_key = f"image_url_key-{index}"
-        image_url = my_placeholder.text_input(label="", value=image_path, key=image_url_key)
+        image_url = my_placeholder.text_input(
+            label="", value=image_path, key=image_url_key
+        )
 
     model = load_model()
 
