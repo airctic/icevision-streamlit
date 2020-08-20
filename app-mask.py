@@ -8,6 +8,7 @@ WEIGHTS_URL = "https://mantisshrimp-models.s3.us-east-2.amazonaws.com/pennfundan
 CLASS_MAP = datasets.pennfundan.class_map()
 
 pennfundan_images = [
+    "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/kids_crossing_street.jpg"
     "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/image0.png",
     "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/image1.png",
     "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/image2.png",
