@@ -20,7 +20,7 @@ pennfundan_images = [
 
 def sidebar_ui():
     # st.sidebar.image("images/airctic-logo-medium.png")
-    st.sidebar.image("images/icevision-deploy-small.png")
+    st.sidebar.image("https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/icevision-deploy-small.png")
 
     # page = st.sidebar.selectbox(
     #     "Choose a dataset", ["PETS", "PennFundan", "Fridge Objects", "Raccoon"]
@@ -99,7 +99,7 @@ def run_app():
     bbox = st.sidebar.checkbox(label="Bounding Box", value=False)
     print("bbox", bbox)
 
-    st.sidebar.image("images/airctic-logo-medium.png")
+    st.sidebar.image("https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/airctic-logo-medium.png")
 
     st.markdown("### ** Paste Your Image URL**")
     my_placeholder = st.empty()
