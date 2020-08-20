@@ -1,8 +1,8 @@
 # streamlitshrimp
-Streamlit demo app for MantisShrimp
+IceVision Streamlit App
 
 # Installation
 `pip install -r requirements.txt`
 
 # Usage
-`streamlit run app.py`
+`streamlit run app-mask.py`

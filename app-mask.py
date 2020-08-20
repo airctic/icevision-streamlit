@@ -2,6 +2,7 @@ import streamlit as st
 import PIL, requests
 from mantisshrimp.all import *
 from PIL import Image
+from random import randrange
 
 WEIGHTS_URL = "https://mantisshrimp-models.s3.us-east-2.amazonaws.com/pennfundan_maskrcnn_resnet50fpn.zip"
 CLASS_MAP = datasets.pennfundan.class_map()
@@ -16,29 +17,6 @@ pennfundan_images = [
 ]
 
 
-@st.cache(show_spinner=False)
-def load_image_file(image_path):
-    """
-    Loads an Image file
-    """
-    image = Image.open(image_path)
-    image = image.convert("RGB")
-    image = np.array(image)
-    image = image / 255.0
-    image = image.astype(np.float32)
-    return image
-
-
-def random_image():
-    if st.button("Press Me!"):
-        # Just load an image from sample_images folder
-        random_image = random.choice(pennfundan_images)
-        image_url = st.text_input(label="Image url", value=random_image,)
-        # st.image(random_image)
-        # image = load_image_file(random_image)
-        flag = 1
-
-
 # This sidebar UI lets the user select model thresholds.
 def object_detector_ui():
     st.sidebar.markdown("# Model Thresholds")
@@ -50,7 +28,8 @@ def object_detector_ui():
 
 
 def sidebar_ui():
-    st.sidebar.image("images/airctic-logo-medium.png")
+    # st.sidebar.image("images/airctic-logo-medium.png")
+    st.sidebar.image("images/icevision-deploy-small.png")
 
     page = st.sidebar.selectbox(
         "Choose a dataset", ["PETS", "PennFundan", "Fridge Objects", "Raccoon"]
@@ -108,25 +87,32 @@ def show_prediction(img, pred):
 
 
 def run_app():
-    st.image("images/icevision.png")
-    # st.image("images/image3.png")
+    # st.image("images/icevision.png", use_column_width=True)
     sidebar_ui()
 
-    image_url = st.text_input(
-        label="Image url",
+    st.markdown("### ** Paste Your Image URL**")
+    my_placeholder = st.empty()
+
+    image_url = my_placeholder.text_input(
+        label="",
         value="https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/image1.png",
     )
 
+    st.markdown("### **Or**")
     if st.button("Press Me!"):
         # Just load an image from sample_images folder
-        random_image = random.choice(pennfundan_images)
-        image_url = st.text_input(label="Image url", value=random_image,)
-    # random_image()
+        random_index = randrange(len(pennfundan_images))
+        random_image = pennfundan_images[random_index]
+        image_key = f"image{random_index}"
+        image_url = my_placeholder.text_input(
+            label="", value=random_image, key=image_key
+        )
 
     model = load_model()
 
-    img, pred = predict(model=model, image_url=image_url)
-    show_prediction(img=img, pred=pred)
+    if image_url:
+        img, pred = predict(model=model, image_url=image_url)
+        show_prediction(img=img, pred=pred)
 
 
 if __name__ == "__main__":
