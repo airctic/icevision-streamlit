@@ -1,2 +1,1 @@
 streamlit
-git+git://github.com/airctic/mantisshrimp.git#egg=mantisshrimp[all]

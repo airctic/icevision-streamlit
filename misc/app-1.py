@@ -1,11 +1,28 @@
 import streamlit as st
 import PIL, requests
-from mantisshrimp.all import *
+from icevision.all import *
 from PIL import Image
 from random import randrange
 
-WEIGHTS_URL = "https://mantisshrimp-models.s3.us-east-2.amazonaws.com/pennfundan_maskrcnn_resnet50fpn.zip"
-CLASS_MAP = datasets.pennfundan.class_map()
+MASK_PENNFUNDAN_WEIGHTS_URL = "https://github.com/airctic/model_zoo/releases/download/pennfudan_maskrcnn_resnet50fpn/pennfudan_maskrcnn_resnet50fpn.zip"
+
+
+
+# @st.cache(allow_output_mutation=True)
+def load_model(class_map=class_map, url=None):
+    if url is None:
+        # print("Please provide a valid URL")
+        return None
+    else:
+        model = mask_rcnn.model(num_classes=len(class_map))
+        state_dict = torch.hub.load_state_dict_from_url(
+            url, map_location=torch.device("cpu")
+        )
+        model.load_state_dict(state_dict)
+        return model
+
+class_map = icedata.pennfudan.class_map()
+model = load_model(class_map=class_map, url=MASK_PENNFUNDAN_WEIGHTS_URL)
 
 pennfundan_images = [
     "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/kids_crossing_street.jpg",
@@ -26,10 +43,6 @@ def sidebar_ui():
         "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/icevision-deploy-small.png"
     )
 
-    page = st.sidebar.selectbox(
-        "Choose a dataset", ["PETS", "PennFundan", "Fridge Objects", "Raccoon"]
-    )  # pages
-
 
 # This sidebar UI lets the user select model thresholds.
 def object_detector_ui():
@@ -39,15 +52,6 @@ def object_detector_ui():
     return detection_threshold, mask_threshold
 
 
-@st.cache(allow_output_mutation=True)
-def load_model():
-    model = mask_rcnn.model(num_classes=len(CLASS_MAP))
-    state_dict = torch.hub.load_state_dict_from_url(
-        WEIGHTS_URL, map_location=torch.device("cpu")
-    )
-    model.load_state_dict(state_dict)
-    return model
-
 
 def image_from_url(url):
     res = requests.get(url, stream=True)
@@ -56,10 +60,15 @@ def image_from_url(url):
 
 
 def predict(
-    model, image_url, detection_threshold: float = 0.5, mask_threshold: float = 0.5
+    model,
+    image,
+    detection_threshold: float = 0.5,
+    mask_threshold: float = 0.5,
+    display_label=True,
+    display_bbox=True,
+    display_mask=True,
 ):
-    img = image_from_url(image_url)
-
+    img = np.array(image)
     tfms_ = tfms.A.Adapter([tfms.A.Normalize()])
     # Whenever you have images in memory (numpy arrays) you can use `Dataset.from_images`
     infer_ds = Dataset.from_images([img], tfms_)
@@ -71,26 +80,45 @@ def predict(
         detection_threshold=detection_threshold,
         mask_threshold=mask_threshold,
     )
-
     return samples[0]["img"], preds[0]
 
 
-def show_prediction(img, pred, bbox=False, image_key="image_key"):
-    show_pred(
-        img=img,
-        pred=pred,
-        class_map=CLASS_MAP,
-        denormalize_fn=denormalize_imagenet,
-        show=True,
-        bbox=bbox,
+def get_masks(
+    model,
+    image_url,
+    class_map=None,
+    detection_threshold: float = 0.5,
+    mask_threshold: float = 0.5,
+    display_label=True,
+    display_bbox=True,
+    display_mask=True,
+):
+
+    # Loading image from url
+    input_image = image_from_url(image_url)
+
+    img, pred = predict(
+        model=model,
+        image=input_image,
+        detection_threshold=detection_threshold,
+        mask_threshold=mask_threshold,
+        display_label=display_label,
+        display_bbox=display_bbox,
+        display_mask=display_mask,
     )
 
-    # Grab image from the current matplotlib figure
-    fig = plt.gcf()
-    fig.canvas.draw()
-    fig_arr = np.array(fig.canvas.renderer.buffer_rgba())
-
-    st.image(fig_arr, use_column_width=True, image_key=image_key)
+    img = draw_pred(
+        img=img,
+        pred=pred,
+        class_map=class_map,
+        denormalize_fn=denormalize_imagenet,
+        display_label=display_label,
+        display_bbox=display_bbox,
+        display_mask=display_mask,
+    )
+    img = PIL.Image.fromarray(img)
+    # print("Output Image: ", img.size, type(img))
+    return img
 
 
 def run_app():
@@ -100,8 +128,9 @@ def run_app():
     # Draw the threshold parameters for object detection model.
     detection_threshold, mask_threshold = object_detector_ui()
 
-    bbox = st.sidebar.checkbox(label="Bounding Box", value=False)
-    print("bbox", bbox)
+    label = st.sidebar.checkbox(label="Label", value=True)
+    bbox = st.sidebar.checkbox(label="Bounding Box", value=True)
+    mask = st.sidebar.checkbox(label="Mask", value=True)
 
     st.sidebar.image(
         "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/airctic-logo-medium.png"
@@ -125,17 +154,19 @@ def run_app():
             label="", value=image_path, key=image_url_key
         )
 
-    model = load_model()
-
     image_key = f"image_key-{index}"
     if image_url:
-        img, pred = predict(
-            model=model,
-            image_url=image_url,
-            detection_threshold=detection_threshold,
-            mask_threshold=mask_threshold,
+        segmented_image = get_masks(
+            model,
+            image_url,
+            class_map=class_map,
+            detection_threshold=float(detection_threshold),
+            mask_threshold=float(mask_threshold),
+            display_label=label,
+            display_bbox=bbox,
+            display_mask=mask,
         )
-        show_prediction(img=img, pred=pred, bbox=bbox, image_key=image_key)
+        st.image(segmented_image, use_column_width=True, image_key=image_key)
 
 
 if __name__ == "__main__":
