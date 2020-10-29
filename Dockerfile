@@ -1,10 +1,13 @@
-FROM python:3.8
+FROM python:3.8-slim
+
+RUN apt-get update && apt-get install -y git python3-dev gcc \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt ./requirements.txt
 
-RUN pip install -r requirements.txt -f https://download.pytorch.org/whl/torch_stable.html
+RUN pip install -r requirements.txt
 
-RUN pip install icevision[inference] icedata
+RUN pip install icevision[inference] icedata streamlit
 
 COPY . .
 
