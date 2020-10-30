@@ -1,7 +1,7 @@
 # IceVision Streamlit App
 
 ## Pre-requisites
-You need to have the IceVision already installed in order to run the IceVision Streamlit App. You can either install the `[inference]` or  `[all]`packages. The `[inference]` option is recommended if we are only interested in getting the predictions (inference) as opposed to training models.
+You need to have the IceVision package already installed in order to run the IceVision Streamlit App. You can either install the `[inference]` or  `[all]`packages. The `[inference]` option is recommended if we are only interested in getting the predictions (inference) as opposed to training models.
 
 For `[inference]` the packages option:
 ```bash
@@ -10,7 +10,7 @@ pip install icevision[inference] icedata
 
 For `[all]` the packages option:
 ```bash
-pip install icevision[inference] icedata
+pip install icevision[all] icedata
 ```
 
 
@@ -20,6 +20,11 @@ From your the project root directory , run the following command:
 ```bash
 pip install streamlit
 ```
+In your termilal, press **Ctrl+Click** on the URL to open the app in your  browser, 
+or open the following URL in your browser:  http://localhost:8501/.
+
+Drag & Drop an image in the grey zone. The predicted image will appear after a few seconds. 
+Use the controls on the left to adjust the thresholds as well the masks attributes (label, bounding boxes, masks)
 
 ---
 ## Running the Streamlit App from the Githup Repo
@@ -29,7 +34,11 @@ Install the streamlit package if it has not be done yet by running the following
 ```bash
 streamlit run https://raw.githubusercontent.com/airctic/icevision-streamlit/master/app.py
 ```
+In your termilal, press **Ctrl+Click** on the URL to open the app in your  browser, 
+or open the following URL in your browser:  http://localhost:8501/
 
+Drag & Drop an image in the grey zone. The predicted image will appear after a few seconds. 
+Use the controls on the left to adjust the thresholds as well the masks attributes (label, bounding boxes, masks)
 
 ## Running the Streamlit App on a Local Machine
 ```bash
@@ -58,3 +67,6 @@ docker run -p 8501:8501 ice-st:latest
 > Important: Your container will be available on http://localhost:8501/
 
 > Note: Make sure no other app is running on port 8501
+
+Drag & Drop an image in the grey zone. The predicted image will appear after a few seconds. 
+Use the controls on the left to adjust the thresholds as well the masks attributes (label, bounding boxes, masks)
