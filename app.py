@@ -128,7 +128,7 @@ def run_app():
         "https://raw.githubusercontent.com/ai-fast-track/ice-streamlit/master/images/airctic-logo-medium.png"
     )
 
-    st.markdown("### ** Insert an image**")
+    st.markdown("### ** Drag & Drop an image**")
     uploaded_file = st.file_uploader("")  # image upload widget
     my_placeholder = st.empty()
     image = None
