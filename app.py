@@ -3,10 +3,13 @@ import PIL, requests
 from icevision.all import *
 from PIL import Image
 from random import randrange
+from streamlit import caching
 
 MASK_PENNFUNDAN_WEIGHTS_URL = "https://github.com/airctic/model_zoo/releases/download/pennfudan_maskrcnn_resnet50fpn/pennfudan_maskrcnn_resnet50fpn.zip"
 
 
+# Just for tests. Remove after
+# caching.clear_cache()
 
 # @st.cache(allow_output_mutation=True)
 def load_model(class_map=class_map, url=None):
@@ -14,7 +17,9 @@ def load_model(class_map=class_map, url=None):
         # print("Please provide a valid URL")
         return None
     else:
-        model = mask_rcnn.model(num_classes=len(class_map))
+        # backbone = backbones.resnet_fpn.resnet50(pretrained=False) 
+        # model = mask_rcnn.model(backbone=backbone, num_classes=len(class_map), pretrained=False)
+        model = mask_rcnn.model(num_classes=len(class_map), pretrained=False, pretrained_backbone=False)
         state_dict = torch.hub.load_state_dict_from_url(
             url, map_location=torch.device("cpu")
         )
@@ -109,7 +114,7 @@ def get_masks(
     return img
 
 
-def run_app():
+def run_app():   
     st.set_option('deprecation.showfileUploaderEncoding', False)
     sidebar_ui()
 
