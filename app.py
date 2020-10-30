@@ -17,9 +17,8 @@ def load_model(class_map=class_map, url=None):
         # print("Please provide a valid URL")
         return None
     else:
-        # backbone = backbones.resnet_fpn.resnet50(pretrained=False) 
-        # model = mask_rcnn.model(backbone=backbone, num_classes=len(class_map), pretrained=False)
-        model = mask_rcnn.model(num_classes=len(class_map), pretrained=False, pretrained_backbone=False)
+        backbone = backbones.resnet_fpn.resnet50(pretrained=False) 
+        model = mask_rcnn.model(backbone=backbone, num_classes=len(class_map), pretrained=False)
         state_dict = torch.hub.load_state_dict_from_url(
             url, map_location=torch.device("cpu")
         )

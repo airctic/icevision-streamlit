@@ -7,9 +7,7 @@ COPY requirements.txt ./requirements.txt
 
 RUN pip install -r requirements.txt
 
-RUN pip install git+git://github.com/ai-fast-track/icevision.git@add-pretrained_backbone#egg=icevision[inference]
-
-RUN pip install icedata streamlit
+RUN pip install icevision[inference]==0.2.2 icedata streamlit
 
 COPY . .
 
