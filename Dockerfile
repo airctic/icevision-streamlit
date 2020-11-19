@@ -1,13 +1,13 @@
 FROM python:3.8-slim
 
-RUN apt-get update && apt-get install -y git python3-dev gcc \
-    && rm -rf /var/lib/apt/lists/*
+ENV PIP_NO_CACHE_DIR=1
+
+RUN apt-get update && apt-get install -y gcc && apt-get -y clean && apt-get -y autoremove
 
 COPY requirements.txt ./requirements.txt
 
-RUN pip install -r requirements.txt
-
-RUN pip install icevision[inference]==0.2.2 icedata streamlit
+RUN pip install -r requirements.txt \
+    && pip install icevision[inference]==0.2.2 icedata streamlit
 
 COPY . .
 
